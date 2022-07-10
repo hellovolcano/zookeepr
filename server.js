@@ -2,6 +2,7 @@ const express = require('express')
 const { animals } = require('./data/animals')
 const fs = require('fs')
 const path = require('path')
+const { PassThrough } = require('stream')
 
 const PORT = process.env.PORT || 3001
 const app = express()
@@ -10,6 +11,8 @@ const app = express()
 app.use(express.urlencoded({ extended: true}))
 // parse incoming JSON data
 app.use(express.json())
+// give access to the front-end assets
+app.use(express.static('public'));
 
 const filterByQuery = (query, animalsArray) => {
     let personalityTraitsArray = []
@@ -110,6 +113,22 @@ app.post('/api/animals', (req,res) => {
     res.json(animal)
     }
     
+})
+
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, './public/index.html'));
+  })
+
+app.get('/animals', (req,res) => {
+    res.sendFile(path.join(__dirname, './public/animals.html'))
+})
+
+app.get('/zookeepers', (req, res) => {
+    res.sendFile(path.join(__dirname, './public/zookeepers.html'))
+})
+
+app.get('*', (req,res) => {
+    res.sendFile(path.join(__dirname, './public/index.html'))
 })
 
 app.listen(PORT, () => {
